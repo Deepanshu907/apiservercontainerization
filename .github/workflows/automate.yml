@@ -1,18 +1,23 @@
-name: Docker image build
+name: Docker Build and Push
 
-on: push
+on:
+  push:
+    branches:
+      - main  
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: testing
-        run: |
-          ls
-          pwd
-          cat main.py
-          cat Dockerfile
-          cat requirements.txt
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t deepanshu907/containerization:latest .
+
+      - name: Push Docker Image to Docker Hub
+        run: docker push deepanshu907/containerization:latest
